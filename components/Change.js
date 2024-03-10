@@ -1,19 +1,19 @@
 "use client";
 
-import useRecovery from "@/hooks/useRecovery";
+import useChange from "@/hooks/useChange";
 import { Button, Input } from "@material-tailwind/react";
 import { useState } from "react";
 
-export default function Recovery() {
+export default function Change() {
   const [domain, setDomain] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [newPassword, setNewPassword] = useState("");
-  const { recover } = useRecovery();
+  const { change } = useChange();
 
   return (
     <>
-      <h1 className="text-7xl font-bold mt-5 mb-5">Recovery</h1>
+      <h1 className="text-7xl font-bold mt-5 mb-5">Change</h1>
       <Input
         label="Enter Domain Name"
         size="lg"
@@ -27,7 +27,7 @@ export default function Recovery() {
         onChange={(e) => setPassword(e.target.value)}
       />
       <Input
-        label="Enter New Password"
+        label="Enter New Recovery Password"
         size="lg"
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
@@ -37,11 +37,11 @@ export default function Recovery() {
           domain === "" || password === "" || newPassword === "" || loading
         }
         onClick={() => {
-          recover(domain, password, newPassword, setLoading);
+          change(domain, password, newPassword, setLoading);
         }}
       >
         {" "}
-        Recover{" "}
+        Change{" "}
       </Button>
     </>
   );

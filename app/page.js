@@ -1,3 +1,4 @@
+import Change from "@/components/Change";
 import Deploy from "@/components/Deploy";
 import Execute from "@/components/Execute";
 import Recovery from "@/components/Recovery";
@@ -8,6 +9,7 @@ export default function Home() {
       <Deploy />
       <Execute />
       <Recovery />
+      <Change />
     </div>
   );
 }

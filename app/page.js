@@ -1,3 +1,4 @@
+import Batch from "@/components/Batch";
 import Change from "@/components/Change";
 import Deploy from "@/components/Deploy";
 import Execute from "@/components/Execute";
@@ -10,6 +11,7 @@ export default function Home() {
       <Execute />
       <Recovery />
       <Change />
+      <Batch />
     </div>
   );
 }

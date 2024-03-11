@@ -85,7 +85,7 @@ export default function useExecute() {
       gas: 1000000,
       proof: proof,
       to: keypair.address,
-      value: 0,
+      value: Number(ethers.utils.parseEther("0.00098")).toString(),
       data: "0x",
     };
 
@@ -136,9 +136,9 @@ export default function useExecute() {
     const data = forwarder.interface.encodeFunctionData("execute", [
       forwardRequest,
       ethers.constants.AddressZero,
-      "0",
-      "0",
-      "0",
+      "1000000",
+      "200000",
+      "600000000000",
     ]);
 
     console.log(data);

@@ -3,6 +3,7 @@ import Change from "@/components/Change";
 import Deploy from "@/components/Deploy";
 import Execute from "@/components/Execute";
 import Recovery from "@/components/Recovery";
+import Verify from "@/components/Verify";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <Recovery />
       <Change />
       <Batch />
+      <Verify />
     </div>
   );
 }

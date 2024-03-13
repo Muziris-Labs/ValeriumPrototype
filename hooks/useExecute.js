@@ -136,9 +136,9 @@ export default function useExecute() {
     const data = forwarder.interface.encodeFunctionData("execute", [
       forwardRequest,
       "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-      "1000000",
-      "200000",
-      "600000000000",
+      "0",
+      "0",
+      "0",
     ]);
 
     console.log(data);

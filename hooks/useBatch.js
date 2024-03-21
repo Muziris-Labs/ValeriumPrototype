@@ -5,6 +5,7 @@ import ValeriumFactoryABI from "@/lib/contracts/ValeriumFactoryABI.json";
 import {
   ValeriumForwarder,
   ValeriumProxyFactory,
+  ValeriumVault,
 } from "@/lib/contracts/AddressManager";
 import { Noir } from "@noir-lang/noir_js";
 import { BarretenbergBackend } from "@noir-lang/backend_barretenberg";
@@ -12,6 +13,7 @@ import passwordHash from "@/lib/circuits/password_hash.json";
 import passwordProve from "@/lib/circuits/password_prove.json";
 import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
 import ValeriumForwarderABI from "@/lib/contracts/ValeriumForwarderABI.json";
+import ValeriumVaultABI from "@/lib/contracts/ValeriumVaultABI.json";
 
 export default function useBatch() {
   const executeBatch = async (domain, password, setLoading) => {
@@ -77,7 +79,7 @@ export default function useBatch() {
       provider
     );
 
-    const to = [keypair.address, keypair.address];
+    const to = ["0x996A5ed069A393F0b25A08f3212F619D801bA110", keypair.address];
     let toHash = ethers.constants.HashZero;
     for (let i = 0; i < to.length; i++) {
       toHash = ethers.utils.keccak256(
@@ -94,6 +96,20 @@ export default function useBatch() {
       );
     }
     console.log("ValueHash:", valueHash);
+
+    const ValeriumVaultContract = new ethers.Contract(
+      ValeriumVault,
+      ValeriumVaultABI,
+      provider
+    );
+
+    const deposit = ValeriumVaultContract.interface.encodeFunctionData(
+      "deposit",
+      [
+        "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+        Number(ethers.utils.parseEther("0.1")).toString(),
+      ]
+    );
 
     const dataArray = ["0x", "0x"];
 

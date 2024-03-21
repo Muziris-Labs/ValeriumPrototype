@@ -11,7 +11,9 @@ import ValeriumForwarderABI from "@/lib/contracts/ValeriumForwarderABI.json";
 import {
   ValeriumForwarder,
   ValeriumProxyFactory,
+  ValeriumVault,
 } from "@/lib/contracts/AddressManager";
+import ValeriumVaultABI from "@/lib/contracts/ValeriumVaultABI.json";
 
 export default function useExecute() {
   const execute = async (domain, password, setLoading) => {
@@ -77,6 +79,34 @@ export default function useExecute() {
       provider
     );
 
+    const erc20Contract = new ethers.Contract(
+      "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      [
+        "function transfer(address to, uint256 value) external returns (bool success)",
+        "function approve(address spender, uint256 amount) external returns (bool success)",
+      ],
+      provider
+    );
+
+    const transferData = erc20Contract.interface.encodeFunctionData("approve", [
+      ValeriumVault,
+      Number(ethers.utils.parseEther("0.1")).toString(),
+    ]);
+
+    const ValeriumVaultContract = new ethers.Contract(
+      ValeriumVault,
+      ValeriumVaultABI,
+      provider
+    );
+
+    const deposit = ValeriumVaultContract.interface.encodeFunctionData(
+      "deposit",
+      [
+        "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+        Number(ethers.utils.parseEther("0.1")).toString(),
+      ]
+    );
+
     const message = {
       from: keypair.address,
       recipient: valeriumAddress,
@@ -84,9 +114,9 @@ export default function useExecute() {
       nonce: Number(await forwarder.nonces(keypair.address)),
       gas: 1000000,
       proof: proof,
-      to: keypair.address,
-      value: Number(ethers.utils.parseEther("0.00098")).toString(),
-      data: "0x",
+      to: ValeriumVault,
+      value: 0,
+      data: deposit,
     };
 
     const data712 = {
@@ -136,9 +166,9 @@ export default function useExecute() {
     const data = forwarder.interface.encodeFunctionData("execute", [
       forwardRequest,
       "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-      "0",
-      "0",
-      "0",
+      "1000000",
+      "200000",
+      "600000000000",
     ]);
 
     console.log(data);

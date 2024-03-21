@@ -79,7 +79,7 @@ export default function useBatch() {
       provider
     );
 
-    const to = ["0x996A5ed069A393F0b25A08f3212F619D801bA110", keypair.address];
+    const to = ["0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2", ValeriumVault];
     let toHash = ethers.constants.HashZero;
     for (let i = 0; i < to.length; i++) {
       toHash = ethers.utils.keccak256(
@@ -97,6 +97,19 @@ export default function useBatch() {
     }
     console.log("ValueHash:", valueHash);
 
+    const erc20Contract = new ethers.Contract(
+      "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      [
+        "function approve(address spender, uint256 amount) public returns (bool)",
+      ],
+      provider
+    );
+
+    const approveData = erc20Contract.interface.encodeFunctionData("approve", [
+      ValeriumVault,
+      Number(ethers.utils.parseEther("0.1")).toString(),
+    ]);
+
     const ValeriumVaultContract = new ethers.Contract(
       ValeriumVault,
       ValeriumVaultABI,
@@ -111,7 +124,7 @@ export default function useBatch() {
       ]
     );
 
-    const dataArray = ["0x", "0x"];
+    const dataArray = [approveData, deposit];
 
     let dataHash = ethers.constants.HashZero;
     for (let i = 0; i < dataArray.length; i++) {

@@ -116,7 +116,7 @@ export default function useExecute() {
       proof: proof,
       to: ValeriumVault,
       value: 0,
-      data: deposit,
+      data: "0x",
     };
 
     const data712 = {

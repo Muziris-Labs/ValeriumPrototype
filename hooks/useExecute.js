@@ -66,6 +66,7 @@ export default function useExecute() {
     const proof = ethers.utils.hexlify(
       (await proveNoir.generateFinalProof(inputs)).proof
     );
+    console.log(proof);
 
     // Prepare the forwarder payload
     const keypair = new ethers.Wallet(
@@ -114,8 +115,8 @@ export default function useExecute() {
       nonce: Number(await forwarder.nonces(keypair.address)),
       gas: 1000000,
       proof: proof,
-      to: ValeriumVault,
-      value: 0,
+      to: keypair.address,
+      value: ethers.utils.parseEther("0.1"),
       data: "0x",
     };
 
@@ -166,9 +167,9 @@ export default function useExecute() {
     const data = forwarder.interface.encodeFunctionData("execute", [
       forwardRequest,
       "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-      "1000000",
-      "200000",
-      "600000000000",
+      "0",
+      "0",
+      "0",
     ]);
 
     console.log(data);

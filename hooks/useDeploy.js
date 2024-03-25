@@ -12,6 +12,7 @@ import {
 } from "@/lib/contracts/AddressManager";
 import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
 import FactoryForwarderABI from "@/lib/contracts/FactoryForwarderABI.json";
+import axios from "axios";
 
 export default function useDeploy() {
   const deploy = async (domain, password, setLoading) => {
@@ -53,10 +54,7 @@ export default function useDeploy() {
       console.log(initializer);
 
       // Prepare the forwarder payload
-      const keypair = new ethers.Wallet(
-        process.env.NEXT_PUBLIC_PRIVATE_KEY,
-        provider
-      );
+      const keypair = ethers.Wallet.createRandom();
 
       const forwarder = new ethers.Contract(
         FactoryForwarder,
@@ -89,7 +87,7 @@ export default function useDeploy() {
           ],
         },
         domain: {
-          name: "Factory Forwarder",
+          name: "Valerium Forwarder",
           version: "1",
           chainId: 1891,
           verifyingContract: FactoryForwarder,
@@ -117,27 +115,16 @@ export default function useDeploy() {
         signature: signature,
       };
 
-      const fundingWallet = new ethers.Wallet(
-        process.env.NEXT_PUBLIC_PRIVATE_KEY,
-        provider
+      console.log(forwardRequest);
+
+      const response = await axios.post(
+        "http://localhost:8080/api/deploy/1891",
+        {
+          forwardRequest,
+        }
       );
 
-      const data = forwarder.interface.encodeFunctionData("execute", [
-        forwardRequest,
-      ]);
-
-      const unSignedTx = {
-        to: FactoryForwarder,
-        data,
-        value: 0,
-        gasLimit: 1000000,
-      };
-
-      const signedTx = await fundingWallet.sendTransaction(unSignedTx);
-
-      const recipient = await signedTx.wait();
-
-      console.log(recipient);
+      console.log(response.data);
     } catch (e) {
       console.log(e);
     } finally {

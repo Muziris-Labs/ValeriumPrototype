@@ -44,12 +44,38 @@
   },
   {
     "inputs": [],
+    "name": "RecoveryHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "RecoveryVerifier",
     "outputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "TxHash",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -105,7 +131,13 @@
       }
     ],
     "name": "changeRecovery",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -153,7 +185,13 @@
       }
     ],
     "name": "changeRecoveryWithForwarder",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "magicValue",
+        "type": "bytes4"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -181,7 +219,13 @@
       }
     ],
     "name": "executeBatchTx",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -231,9 +275,9 @@
     "name": "executeBatchTxWithForwarder",
     "outputs": [
       {
-        "internalType": "bool",
-        "name": "success",
-        "type": "bool"
+        "internalType": "bytes4",
+        "name": "magicValue",
+        "type": "bytes4"
       }
     ],
     "stateMutability": "payable",
@@ -263,7 +307,13 @@
       }
     ],
     "name": "executeRecovery",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -311,7 +361,13 @@
       }
     ],
     "name": "executeRecoveryWithForwarder",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bytes4",
+        "name": "magicValue",
+        "type": "bytes4"
+      }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -341,9 +397,9 @@
     "name": "executeTx",
     "outputs": [
       {
-        "internalType": "bool",
-        "name": "success",
-        "type": "bool"
+        "internalType": "bytes4",
+        "name": "",
+        "type": "bytes4"
       }
     ],
     "stateMutability": "payable",
@@ -395,9 +451,9 @@
     "name": "executeTxWithForwarder",
     "outputs": [
       {
-        "internalType": "bool",
-        "name": "success",
-        "type": "bool"
+        "internalType": "bytes4",
+        "name": "magicValue",
+        "type": "bytes4"
       }
     ],
     "stateMutability": "payable",

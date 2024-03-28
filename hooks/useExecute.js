@@ -14,6 +14,7 @@ import {
   ValeriumVault,
 } from "@/lib/contracts/AddressManager";
 import ValeriumVaultABI from "@/lib/contracts/ValeriumVaultABI.json";
+import axios from "axios";
 
 export default function useExecute() {
   const execute = async (domain, password, setLoading) => {
@@ -66,7 +67,6 @@ export default function useExecute() {
     const proof = ethers.utils.hexlify(
       (await proveNoir.generateFinalProof(inputs)).proof
     );
-    console.log(proof);
 
     // Prepare the forwarder payload
     const keypair = new ethers.Wallet(
@@ -116,7 +116,7 @@ export default function useExecute() {
       gas: 1000000,
       proof: proof,
       to: keypair.address,
-      value: ethers.utils.parseEther("0.1"),
+      value: 0,
       data: "0x",
     };
 
@@ -164,28 +164,15 @@ export default function useExecute() {
       signature: signature,
     };
 
-    const data = forwarder.interface.encodeFunctionData("execute", [
-      forwardRequest,
-      "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-      "0",
-      "0",
-      "0",
-    ]);
+    const response = await axios.post(
+      "http://localhost:8080/api/execute/native/1891",
+      {
+        forwardRequest,
+        mode: "password",
+      }
+    );
 
-    console.log(data);
-
-    const unSignedTx = {
-      to: forwarder.address,
-      data,
-      value: 0,
-      gasLimit: 1000000,
-    };
-
-    const signedTx = await keypair.sendTransaction(unSignedTx);
-
-    const recipient = await signedTx.wait();
-
-    console.log(recipient);
+    console.log(response.data);
   };
 
   return { execute };

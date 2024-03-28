@@ -48,9 +48,9 @@ export default function useDeployExternal() {
 
     // Generate Password Prove
     const valerium = new ethers.Contract(
-      "0x2fAF5856C60C14730fd7594684C2C7d52097f440",
+      valeriumAddress,
       ValeriumABI,
-      providerExternal
+      provider
     );
 
     const nonce = (await valerium.getNonce()).toNumber();
@@ -70,16 +70,28 @@ export default function useDeployExternal() {
       (await proveNoir.generateFinalProof(inputs)).proof
     );
 
-    const initializer = valerium.interface.encodeFunctionData("setupValerium", [
-      ethers.utils.keccak256(ethers.utils.toUtf8Bytes(domain)),
-      "0x2ef41ec23021bd5aba53c6599d763e89a897acad",
-      "0x2ef41ec23021bd5aba53c6599d763e89a897acad",
-      "0x50F1bbb486D62921eD9cE411c6b85Ec0B73D9130",
-      "0x51781cc1439BD05a85185C8c8CEc979b263236e3",
-      hash,
-      hash,
-      "0x",
-    ]);
+    const publicInputs = (await proveNoir.generateFinalProof(inputs))
+      .publicInputs;
+
+    const valeriumExternal = new ethers.Contract(
+      "0x2fAF5856C60C14730fd7594684C2C7d52097f440",
+      ValeriumABI,
+      providerExternal
+    );
+
+    const initializer = valeriumExternal.interface.encodeFunctionData(
+      "setupValerium",
+      [
+        ethers.utils.keccak256(ethers.utils.toUtf8Bytes(domain)),
+        "0x2ef41ec23021bd5aba53c6599d763e89a897acad",
+        "0x2ef41ec23021bd5aba53c6599d763e89a897acad",
+        "0x50F1bbb486D62921eD9cE411c6b85Ec0B73D9130",
+        "0x51781cc1439BD05a85185C8c8CEc979b263236e3",
+        hash,
+        hash,
+        "0x",
+      ]
+    );
 
     const chainDeployRequest = {
       domain,

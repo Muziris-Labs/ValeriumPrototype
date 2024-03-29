@@ -164,8 +164,16 @@ export default function useExecute() {
       signature: signature,
     };
 
+    const estimate = await axios.get(
+      `http://localhost:8080/api/execute/estimate/native/1891?forwardRequest=${JSON.stringify(
+        forwardRequest
+      )}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
+    );
+
+    console.log(estimate.data);
+
     const response = await axios.post(
-      "http://localhost:8080/api/execute/native/1891",
+      "http://localhost:8080/api/execute/erc20/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
       {
         forwardRequest,
         mode: "password",

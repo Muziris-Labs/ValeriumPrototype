@@ -14,6 +14,7 @@ import passwordProve from "@/lib/circuits/password_prove.json";
 import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
 import ValeriumForwarderABI from "@/lib/contracts/ValeriumForwarderABI.json";
 import ValeriumVaultABI from "@/lib/contracts/ValeriumVaultABI.json";
+import axios from "axios";
 
 export default function useBatch() {
   const executeBatch = async (domain, password, setLoading) => {
@@ -79,7 +80,10 @@ export default function useBatch() {
       provider
     );
 
-    const to = ["0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2", ValeriumVault];
+    const to = [
+      "0xDb1d125C9f7faE45d7CeE470d048670a85270f4D",
+      "0xDb1d125C9f7faE45d7CeE470d048670a85270f4D",
+    ];
     let toHash = ethers.constants.HashZero;
     for (let i = 0; i < to.length; i++) {
       toHash = ethers.utils.keccak256(
@@ -124,7 +128,7 @@ export default function useBatch() {
       ]
     );
 
-    const dataArray = [approveData, deposit];
+    const dataArray = ["0x", "0x"];
 
     let dataHash = ethers.constants.HashZero;
     for (let i = 0; i < dataArray.length; i++) {
@@ -192,29 +196,47 @@ export default function useBatch() {
       signature: signature,
     };
 
-    // Execute the transaction
-    const data = forwarder.interface.encodeFunctionData("executeBatch", [
-      forwardRequest,
-      "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-      "1000000",
-      "200000",
-      "600000000000",
-    ]);
+    const estimate = await axios.get(
+      `http://localhost:8080/api/executeBatch/estimate/erc20/1891?forwardRequest=${JSON.stringify(
+        forwardRequest
+      )}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
+    );
 
-    console.log(data);
+    console.log(estimate.data);
 
-    const unSignedTx = {
-      to: forwarder.address,
-      data,
-      value: 0,
-      gasLimit: 1000000,
-    };
+    const response = await axios.post(
+      "http://localhost:8080/api/executeBatch/erc20/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      {
+        forwardRequest,
+        mode: "password",
+      }
+    );
 
-    const signedTx = await keypair.sendTransaction(unSignedTx);
+    console.log(response.data);
 
-    const recipient = await signedTx.wait();
+    // // Execute the transaction
+    // const data = forwarder.interface.encodeFunctionData("executeBatch", [
+    //   forwardRequest,
+    //   "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+    //   "1000000",
+    //   "200000",
+    //   "600000000000",
+    // ]);
 
-    console.log(recipient);
+    // console.log(data);
+
+    // const unSignedTx = {
+    //   to: forwarder.address,
+    //   data,
+    //   value: 0,
+    //   gasLimit: 1000000,
+    // };
+
+    // const signedTx = await keypair.sendTransaction(unSignedTx);
+
+    // const recipient = await signedTx.wait();
+
+    // console.log(recipient);
   };
 
   return { executeBatch };

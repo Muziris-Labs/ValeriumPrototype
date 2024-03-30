@@ -1,4 +1,5 @@
 import Batch from "@/components/Batch";
+import BuyCredit from "@/components/BuyCredit";
 import Change from "@/components/Change";
 import Deploy from "@/components/Deploy";
 import DeployExternal from "@/components/DeployExternal";
@@ -11,6 +12,7 @@ export default function Home() {
     <div className="flex flex-col p-10 gap-5">
       <Deploy />
       <DeployExternal />
+      <BuyCredit />
       <Execute />
       <Recovery />
       <Change />

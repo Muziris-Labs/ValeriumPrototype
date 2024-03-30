@@ -2,14 +2,9 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_serverVerifier",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_serverHash",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "_maxWithdrawAmount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -85,19 +80,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "ServerVerifier",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -113,17 +95,12 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_serverVerifier",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_serverHash",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "_maxWithdrawAmount",
+        "type": "uint256"
       }
     ],
-    "name": "changeServerProps",
+    "name": "changeMaxWithdrawAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -144,19 +121,6 @@
     "name": "deposit",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getChainId",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -209,11 +173,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "proof",
-        "type": "bytes"
-      },
       {
         "internalType": "address",
         "name": "token",
@@ -275,6 +234,19 @@
       }
     ],
     "name": "withdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawAll",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

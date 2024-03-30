@@ -12,6 +12,7 @@ import passwordHash from "@/lib/circuits/password_hash.json";
 import passwordProve from "@/lib/circuits/password_prove.json";
 import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
 import ValeriumForwarderABI from "@/lib/contracts/ValeriumForwarderABI.json";
+import axios from "axios";
 
 export default function useChange() {
   const change = async (domain, password, newPassword, setLoading) => {
@@ -139,27 +140,45 @@ export default function useChange() {
       signature: signature,
     };
 
-    // Execute the transaction
-    const data = forwarder.interface.encodeFunctionData("changeRecovery", [
-      forwardRequest,
-      "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-      "1000000",
-      "200000",
-      "600000000000",
-    ]);
+    const estimate = await axios.get(
+      `http://localhost:8080/api/change/estimate/erc20/1891?forwardRequest=${JSON.stringify(
+        forwardRequest
+      )}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
+    );
 
-    const unSignedTx = {
-      to: forwarder.address,
-      data,
-      value: 0,
-      gasLimit: 1000000,
-    };
+    console.log(estimate.data);
 
-    const signedTx = await keypair.sendTransaction(unSignedTx);
+    const response = await axios.post(
+      "http://localhost:8080/api/change/erc20/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      {
+        forwardRequest,
+        mode: "password",
+      }
+    );
 
-    const recipient = await signedTx.wait();
+    console.log(response.data);
 
-    console.log(recipient);
+    // // Execute the transaction
+    // const data = forwarder.interface.encodeFunctionData("changeRecovery", [
+    //   forwardRequest,
+    //   "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+    //   "1000000",
+    //   "200000",
+    //   "600000000000",
+    // ]);
+
+    // const unSignedTx = {
+    //   to: forwarder.address,
+    //   data,
+    //   value: 0,
+    //   gasLimit: 1000000,
+    // };
+
+    // const signedTx = await keypair.sendTransaction(unSignedTx);
+
+    // const recipient = await signedTx.wait();
+
+    // console.log(recipient);
   };
 
   return { change };

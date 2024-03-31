@@ -1,23 +1,23 @@
 "use client";
 
-import { BarretenbergBackend } from "@noir-lang/backend_barretenberg";
 import { ethers } from "ethers";
-import passwordHash from "@/lib/circuits/password_hash.json";
-import passwordProve from "@/lib/circuits/password_prove.json";
-import { Noir } from "@noir-lang/noir_js";
 import ValeriumFactoryABI from "@/lib/contracts/ValeriumFactoryABI.json";
-import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
-import ValeriumForwarderABI from "@/lib/contracts/ValeriumForwarderABI.json";
 import {
   ValeriumForwarder,
   ValeriumProxyFactory,
   ValeriumVault,
 } from "@/lib/contracts/AddressManager";
+import { Noir } from "@noir-lang/noir_js";
+import { BarretenbergBackend } from "@noir-lang/backend_barretenberg";
+import passwordHash from "@/lib/circuits/password_hash.json";
+import passwordProve from "@/lib/circuits/password_prove.json";
+import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
+import ValeriumForwarderABI from "@/lib/contracts/ValeriumForwarderABI.json";
 import ValeriumVaultABI from "@/lib/contracts/ValeriumVaultABI.json";
 import axios from "axios";
 
-export default function useBuy() {
-  const buyNative = async (domain, password, setLoading) => {
+export default function useBuyERC20() {
+  const buyERC20 = async (domain, password, setLoading) => {
     //Get Valerium
     const provider = new ethers.providers.JsonRpcProvider(
       "https://replicator.pegasus.lightlink.io/rpc/v1"
@@ -80,6 +80,37 @@ export default function useBuy() {
       provider
     );
 
+    const to = ["0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2", ValeriumVault];
+    let toHash = ethers.constants.HashZero;
+    for (let i = 0; i < to.length; i++) {
+      toHash = ethers.utils.keccak256(
+        ethers.utils.solidityPack(["bytes32", "address"], [toHash, to[i]])
+      );
+    }
+    console.log("ToHash:", toHash);
+
+    const value = [0, 0];
+    let valueHash = ethers.constants.HashZero;
+    for (let i = 0; i < value.length; i++) {
+      valueHash = ethers.utils.keccak256(
+        ethers.utils.solidityPack(["bytes32", "uint256"], [valueHash, value[i]])
+      );
+    }
+    console.log("ValueHash:", valueHash);
+
+    const erc20Contract = new ethers.Contract(
+      "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      [
+        "function approve(address spender, uint256 amount) public returns (bool)",
+      ],
+      provider
+    );
+
+    const approveData = erc20Contract.interface.encodeFunctionData("approve", [
+      ValeriumVault,
+      Number(ethers.utils.parseEther("0.0001")).toString(),
+    ]);
+
     const ValeriumVaultContract = new ethers.Contract(
       ValeriumVault,
       ValeriumVaultABI,
@@ -89,10 +120,23 @@ export default function useBuy() {
     const deposit = ValeriumVaultContract.interface.encodeFunctionData(
       "deposit",
       [
-        ethers.constants.AddressZero,
-        Number(ethers.utils.parseEther("0.0002")).toString(),
+        "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+        Number(ethers.utils.parseEther("0.0001")).toString(),
       ]
     );
+
+    const dataArray = [approveData, deposit];
+
+    let dataHash = ethers.constants.HashZero;
+    for (let i = 0; i < dataArray.length; i++) {
+      dataHash = ethers.utils.keccak256(
+        ethers.utils.solidityPack(
+          ["bytes32", "bytes32"],
+          [dataHash, ethers.utils.keccak256(dataArray[i])]
+        )
+      );
+    }
+    console.log("DataHash:", dataHash);
 
     const message = {
       from: keypair.address,
@@ -101,23 +145,23 @@ export default function useBuy() {
       nonce: Number(await forwarder.nonces(keypair.address)),
       gas: 1000000,
       proof: proof,
-      to: ValeriumVault,
-      value: Number(ethers.utils.parseEther("0.0002")).toString(),
-      data: deposit,
+      to: toHash,
+      value: valueHash,
+      data: dataHash,
     };
 
     const data712 = {
       types: {
-        ForwardExecute: [
+        ForwardExecuteBatch: [
           { name: "from", type: "address" },
           { name: "recipient", type: "address" },
           { name: "deadline", type: "uint256" },
           { name: "nonce", type: "uint256" },
           { name: "gas", type: "uint256" },
           { name: "proof", type: "bytes" },
-          { name: "to", type: "address" },
-          { name: "value", type: "uint256" },
-          { name: "data", type: "bytes" },
+          { name: "to", type: "bytes32" },
+          { name: "value", type: "bytes32" },
+          { name: "data", type: "bytes32" },
         ],
       },
       domain: {
@@ -137,21 +181,20 @@ export default function useBuy() {
 
     console.log(signature);
 
-    // Execute the transaction
     const forwardRequest = {
       from: keypair.address,
       recipient: valeriumAddress,
       deadline: message.deadline,
       gas: message.gas,
       proof: message.proof,
-      to: message.to,
-      value: message.value,
-      data: message.data,
+      to: to,
+      value: value,
+      data: dataArray,
       signature: signature,
     };
 
     const estimate = await axios.get(
-      `http://localhost:8080/api/execute/estimate/native/1891?forwardRequest=${JSON.stringify(
+      `http://localhost:8080/api/executeBatch/estimate/erc20/1891?forwardRequest=${JSON.stringify(
         forwardRequest
       )}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
     );
@@ -159,23 +202,21 @@ export default function useBuy() {
     console.log(estimate.data);
 
     const res = await axios.post(
-      "http://localhost:8080/api/execute/native/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      "http://localhost:8080/api/executeBatch/erc20/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
       {
         forwardRequest,
         mode: "password",
       }
     );
 
-    if (!res.data.success) return;
-
     console.log(res.data);
 
     const response = await axios.post(
-      `http://localhost:8080/api/gasCredit/native/verify/1891?tx=${res.data.receipt.transactionHash}&domain=${domain}`
+      `http://localhost:8080/api/gasCredit/erc20/verify/1891?tx=${res.data.receipt.transactionHash}&domain=${domain}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
     );
 
     console.log(response.data);
   };
 
-  return { buyNative };
+  return { buyERC20 };
 }

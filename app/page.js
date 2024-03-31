@@ -1,5 +1,6 @@
 import Batch from "@/components/Batch";
 import BuyCredit from "@/components/BuyCredit";
+import BuyCreditERC20 from "@/components/BuyCreditERC20";
 import Change from "@/components/Change";
 import Deploy from "@/components/Deploy";
 import DeployExternal from "@/components/DeployExternal";
@@ -13,6 +14,7 @@ export default function Home() {
       <Deploy />
       <DeployExternal />
       <BuyCredit />
+      <BuyCreditERC20 />
       <Execute />
       <Recovery />
       <Change />

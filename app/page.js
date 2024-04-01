@@ -7,6 +7,7 @@ import DeployExternal from "@/components/DeployExternal";
 import Execute from "@/components/Execute";
 import Recovery from "@/components/Recovery";
 import Verify from "@/components/Verify";
+import PasskeyWallet from "@/components/Wallet";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <Change />
       <Batch />
       <Verify />
+      <PasskeyWallet />
     </div>
   );
 }

@@ -80,6 +80,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "WithdrawAllGenesis",
+    "type": "event"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -208,6 +221,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "snapshotTime",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -216,6 +242,13 @@
       }
     ],
     "name": "transferGenesis",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "updateSnapshotTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

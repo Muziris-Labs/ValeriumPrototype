@@ -142,16 +142,26 @@ export default function useRecovery() {
       signature: signature,
     };
 
-    const estimate = await axios.get(
-      `http://localhost:8080/api/recovery/estimate/erc20/1891?forwardRequest=${JSON.stringify(
-        forwardRequest
-      )}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
-    );
+    // const estimate = await axios.get(
+    //   `http://localhost:8080/api/recovery/estimate/erc20/1891?forwardRequest=${JSON.stringify(
+    //     forwardRequest
+    //   )}&address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2`
+    // );
 
-    console.log(estimate.data);
+    // console.log(estimate.data);
+
+    // const response = await axios.post(
+    //   "http://localhost:8080/api/recovery/erc20/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+    //   {
+    //     forwardRequest,
+    //     mode: "password",
+    //   }
+    // );
+
+    // console.log(response.data);
 
     const response = await axios.post(
-      "http://localhost:8080/api/recovery/erc20/1891?address=0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
+      `http://localhost:8080/api/recovery/gasless/${domain}/1891`,
       {
         forwardRequest,
         mode: "password",
@@ -160,29 +170,11 @@ export default function useRecovery() {
 
     console.log(response.data);
 
-    // // Execute the transaction
-    // const data = forwarder.interface.encodeFunctionData("executeRecovery", [
-    //   forwardRequest,
-    //   "0x60d7966bdf03f0Ec0Ac6de7269CE0E57aAd6e9c2",
-    //   "1000000",
-    //   "200000",
-    //   "600000000000",
-    // ]);
+    const balance = await axios.get(
+      `http://localhost:8080/api/gasCredit/balance/${domain}`
+    );
 
-    // console.log(data);
-
-    // const unSignedTx = {
-    //   to: forwarder.address,
-    //   data,
-    //   value: 0,
-    //   gasLimit: 1000000,
-    // };
-
-    // const signedTx = await keypair.sendTransaction(unSignedTx);
-
-    // const recipient = await signedTx.wait();
-
-    // console.log(recipient);
+    console.log(balance.data);
   };
   return { recover };
 }

@@ -8,6 +8,7 @@ import Execute from "@/components/Execute";
 import Recovery from "@/components/Recovery";
 import Verify from "@/components/Verify";
 import PasskeyWallet from "@/components/Wallet";
+import WebAuthn from "@/components/WebAuthn";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <Batch />
       <Verify />
       <PasskeyWallet />
+      <WebAuthn />
     </div>
   );
 }

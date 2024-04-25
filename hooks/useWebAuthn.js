@@ -32,7 +32,8 @@ export default function useWebAuthn() {
     const aaguid = parsedAuthData.aaguid;
     const rpIdHash = parsedAuthData.rpIdHash;
 
-    const aaguidBuffer = encoder.encode(aaguid).buffer;
+    console.log(aaguid.split("-")[0]);
+    const aaguidBuffer = encoder.encode(aaguid.split("-")[0]).buffer;
     const rpIdHashBuffer = encoder.encode(rpIdHash).buffer;
 
     const addedBuffer = concatenateBuffers(aaguidBuffer, rpIdHashBuffer);
@@ -77,7 +78,8 @@ export default function useWebAuthn() {
     const aaguid = parsedAuthData.aaguid;
     const rpIdHash = parsedAuthData.rpIdHash;
 
-    const aaguidBuffer = encoder.encode(aaguid).buffer;
+    console.log(aaguid.split("-")[0]);
+    const aaguidBuffer = encoder.encode(aaguid.split("-")[0]).buffer;
     const rpIdHashBuffer = encoder.encode(rpIdHash).buffer;
 
     const addedBuffer = concatenateBuffers(aaguidBuffer, rpIdHashBuffer);

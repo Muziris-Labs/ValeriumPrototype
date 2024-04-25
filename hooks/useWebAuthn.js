@@ -2,6 +2,7 @@
 
 import { client } from "@passwordless-id/webauthn";
 import { authenticatorMetadata } from "./authenticatorMetadata";
+import { ethers } from "ethers";
 
 export default function useWebAuthn() {
   const register = async (id) => {
@@ -17,6 +18,40 @@ export default function useWebAuthn() {
     });
 
     console.log(registration);
+    const authenticatorData = registration.authenticatorData;
+    const credentialId = registration.credential.id;
+
+    var encoder = new TextEncoder();
+
+    const parsedAuthData = parseAuthData(
+      encoder.encode(authenticatorData).buffer
+    );
+
+    console.log(parsedAuthData);
+
+    const aaguid = parsedAuthData.aaguid;
+    const rpIdHash = parsedAuthData.rpIdHash;
+
+    const aaguidBuffer = encoder.encode(aaguid).buffer;
+    const rpIdHashBuffer = encoder.encode(rpIdHash).buffer;
+
+    const addedBuffer = concatenateBuffers(aaguidBuffer, rpIdHashBuffer);
+    const BufferHex = bufferToHex(addedBuffer);
+
+    const credentialIdHex = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(credentialId)
+    );
+
+    const sha256BufferHex = ethers.utils.sha256(
+      ethers.utils.arrayify("0x" + BufferHex)
+    );
+
+    const concatenatedHex = sha256BufferHex + credentialIdHex.slice(2);
+
+    const finalHash = ethers.utils.sha256(
+      ethers.utils.arrayify(concatenatedHex)
+    );
+    console.log(finalHash);
   };
 
   const login = async () => {
@@ -28,7 +63,40 @@ export default function useWebAuthn() {
       userVerification: "required",
       timeout: 60000,
     });
+
     console.log(authentication);
+
+    const authData = authentication.authenticatorData;
+    const credentialId = authentication.credentialId;
+
+    var encoder = new TextEncoder();
+    const parsedAuthData = parseAuthData(encoder.encode(authData).buffer);
+
+    console.log(parsedAuthData);
+
+    const aaguid = parsedAuthData.aaguid;
+    const rpIdHash = parsedAuthData.rpIdHash;
+
+    const aaguidBuffer = encoder.encode(aaguid).buffer;
+    const rpIdHashBuffer = encoder.encode(rpIdHash).buffer;
+
+    const addedBuffer = concatenateBuffers(aaguidBuffer, rpIdHashBuffer);
+    const BufferHex = bufferToHex(addedBuffer);
+
+    const credentialIdHex = ethers.utils.hexlify(
+      ethers.utils.toUtf8Bytes(credentialId)
+    );
+
+    const sha256BufferHex = ethers.utils.sha256(
+      ethers.utils.arrayify("0x" + BufferHex)
+    );
+
+    const concatenatedHex = sha256BufferHex + credentialIdHex.slice(2);
+
+    const finalHash = ethers.utils.sha256(
+      ethers.utils.arrayify(concatenatedHex)
+    );
+    console.log(finalHash);
   };
 
   const parseAuthData = (authData) => {
@@ -66,7 +134,7 @@ export default function useWebAuthn() {
       };
     }
 
-    console.log(parsed);
+    return parsed;
   };
 
   function toBase64url(buffer) {
@@ -128,6 +196,14 @@ export default function useWebAuthn() {
     const arrayBuffer = base64urlToArrayBuffer(clientData);
     const str = arrayBufferToString(arrayBuffer);
     console.log(JSON.parse(str));
+    return JSON.parse(str);
+  }
+
+  function concatenateBuffers(buffer1, buffer2) {
+    let tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
+    tmp.set(new Uint8Array(buffer1), 0);
+    tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
+    return tmp;
   }
 
   return { register, login, parseAuthData, clientDataToJSON };

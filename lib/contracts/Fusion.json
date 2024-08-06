@@ -1,7 +1,66 @@
 [
   {
-    "stateMutability": "payable",
-    "type": "fallback"
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "module",
+        "type": "address"
+      }
+    ],
+    "name": "DisabledModule",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "module",
+        "type": "address"
+      }
+    ],
+    "name": "EnabledModule",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "domain",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "txVerifier",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "forwarder",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "gasTank",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "txHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "SetupFusion",
+    "type": "event"
   },
   {
     "inputs": [],
@@ -19,45 +78,6 @@
   {
     "inputs": [],
     "name": "GasTank",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "PublicStorage",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "RecoveryHash",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "RecoveryVerifier",
     "outputs": [
       {
         "internalType": "address",
@@ -110,122 +130,105 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "_proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_newRecoveryHash",
-        "type": "bytes32"
-      },
-      {
         "internalType": "address",
-        "name": "_newRecoveryVerifier",
+        "name": "prevModule",
         "type": "address"
       },
       {
-        "internalType": "bytes",
-        "name": "_publicStorage",
-        "type": "bytes"
+        "internalType": "address",
+        "name": "module",
+        "type": "address"
       }
     ],
-    "name": "changeRecovery",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "",
-        "type": "bytes4"
-      }
-    ],
-    "stateMutability": "payable",
+    "name": "disableModule",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "_proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_newRecoveryHash",
-        "type": "bytes32"
-      },
-      {
         "internalType": "address",
-        "name": "_newRecoveryVerifier",
+        "name": "module",
         "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_publicStorage",
-        "type": "bytes"
-      },
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "gasPrice",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "baseGas",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "estimatedFees",
-        "type": "uint256"
       }
     ],
-    "name": "changeRecoveryWithForwarder",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "magicValue",
-        "type": "bytes4"
-      }
-    ],
-    "stateMutability": "payable",
+    "name": "enableModule",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "_proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "address[]",
+        "internalType": "address",
         "name": "to",
-        "type": "address[]"
+        "type": "address"
       },
       {
-        "internalType": "uint256[]",
+        "internalType": "uint256",
         "name": "value",
-        "type": "uint256[]"
+        "type": "uint256"
       },
       {
-        "internalType": "bytes[]",
+        "internalType": "bytes",
         "name": "data",
-        "type": "bytes[]"
+        "type": "bytes"
+      },
+      {
+        "internalType": "enum Enum.Operation",
+        "name": "operation",
+        "type": "uint8"
+      }
+    ],
+    "name": "execTransactionFromModule",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_proof",
+        "type": "bytes"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum Enum.Operation",
+            "name": "operation",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct Transaction.TransactionData[]",
+        "name": "transactions",
+        "type": "tuple[]"
       }
     ],
     "name": "executeBatchTx",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "",
-        "type": "bytes4"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -237,19 +240,36 @@
         "type": "bytes"
       },
       {
-        "internalType": "address[]",
-        "name": "to",
-        "type": "address[]"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum Enum.Operation",
+            "name": "operation",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct Transaction.TransactionData[]",
+        "name": "transactions",
+        "type": "tuple[]"
       },
       {
-        "internalType": "uint256[]",
-        "name": "value",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "bytes[]",
-        "name": "data",
-        "type": "bytes[]"
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
       },
       {
         "internalType": "address",
@@ -273,13 +293,7 @@
       }
     ],
     "name": "executeBatchTxWithForwarder",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "magicValue",
-        "type": "bytes4"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -291,115 +305,39 @@
         "type": "bytes"
       },
       {
-        "internalType": "bytes32",
-        "name": "_newTxHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_newTxVerifier",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_publicStorage",
-        "type": "bytes"
-      }
-    ],
-    "name": "executeRecovery",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "",
-        "type": "bytes4"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "_proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_newTxHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_newTxVerifier",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_publicStorage",
-        "type": "bytes"
-      },
-      {
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "gasPrice",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "baseGas",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "estimatedFees",
-        "type": "uint256"
-      }
-    ],
-    "name": "executeRecoveryWithForwarder",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "magicValue",
-        "type": "bytes4"
-      }
-    ],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "_proof",
-        "type": "bytes"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
+        "components": [
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum Enum.Operation",
+            "name": "operation",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct Transaction.TransactionData",
+        "name": "txData",
+        "type": "tuple"
       }
     ],
     "name": "executeTx",
     "outputs": [
       {
-        "internalType": "bytes4",
-        "name": "",
-        "type": "bytes4"
+        "internalType": "bool",
+        "name": "success",
+        "type": "bool"
       }
     ],
     "stateMutability": "payable",
@@ -413,19 +351,36 @@
         "type": "bytes"
       },
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+          },
+          {
+            "internalType": "enum Enum.Operation",
+            "name": "operation",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct Transaction.TransactionData",
+        "name": "txData",
+        "type": "tuple"
+      },
+      {
         "internalType": "address",
-        "name": "to",
+        "name": "from",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "value",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
       },
       {
         "internalType": "address",
@@ -449,14 +404,37 @@
       }
     ],
     "name": "executeTxWithForwarder",
-    "outputs": [
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
-        "internalType": "bytes4",
-        "name": "magicValue",
-        "type": "bytes4"
+        "internalType": "address",
+        "name": "start",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pageSize",
+        "type": "uint256"
       }
     ],
-    "stateMutability": "payable",
+    "name": "getModulesPaginated",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "array",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address",
+        "name": "next",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -491,6 +469,25 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "module",
+        "type": "address"
+      }
+    ],
+    "name": "isModuleEnabled",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -665,11 +662,6 @@
       },
       {
         "internalType": "address",
-        "name": "_recoveryVerifier",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_forwarder",
         "type": "address"
       },
@@ -682,19 +674,9 @@
         "internalType": "bytes32",
         "name": "_txHash",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_recoveryHash",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_publicStorage",
-        "type": "bytes"
       }
     ],
-    "name": "setupValerium",
+    "name": "setupFusion",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -786,9 +768,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "stateMutability": "payable",
-    "type": "receive"
   }
 ]

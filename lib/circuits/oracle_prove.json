@@ -1,0 +1,76 @@
+{
+  "noir_version": "0.30.0+af57471035e4fa7eaffa71693219df6d029dbcde",
+  "hash": 7527450273360553206,
+  "abi": {
+    "parameters": [
+      {
+        "name": "pub_key_x",
+        "type": { "kind": "array", "length": 32, "type": { "kind": "field" } },
+        "visibility": "private"
+      },
+      {
+        "name": "pub_key_y",
+        "type": { "kind": "array", "length": 32, "type": { "kind": "field" } },
+        "visibility": "private"
+      },
+      {
+        "name": "signature",
+        "type": {
+          "kind": "array",
+          "length": 64,
+          "type": { "kind": "integer", "sign": "unsigned", "width": 8 }
+        },
+        "visibility": "private"
+      },
+      {
+        "name": "hashed_message",
+        "type": {
+          "kind": "array",
+          "length": 32,
+          "type": { "kind": "integer", "sign": "unsigned", "width": 8 }
+        },
+        "visibility": "public"
+      },
+      {
+        "name": "tx_hash",
+        "type": { "kind": "field" },
+        "visibility": "public"
+      },
+      {
+        "name": "verifying_address",
+        "type": { "kind": "field" },
+        "visibility": "public"
+      },
+      {
+        "name": "signing_address",
+        "type": { "kind": "field" },
+        "visibility": "public"
+      }
+    ],
+    "param_witnesses": {
+      "hashed_message": [{ "start": 128, "end": 160 }],
+      "pub_key_x": [{ "start": 0, "end": 32 }],
+      "pub_key_y": [{ "start": 32, "end": 64 }],
+      "signature": [{ "start": 64, "end": 128 }],
+      "signing_address": [{ "start": 162, "end": 163 }],
+      "tx_hash": [{ "start": 160, "end": 161 }],
+      "verifying_address": [{ "start": 161, "end": 162 }]
+    },
+    "return_type": null,
+    "return_witnesses": [],
+    "error_types": {}
+  },
+  "bytecode": "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",
+  "debug_symbols": "5dzNattAFEDhd5m1Kbq/M/KrlFKUxCkGI4fYKRSTd6/U2sYhTrIIZHN2Hule5LP7NtKh3K1unn79XI/3211Zfj+UzfZ22K+343Q6lD7/Xds9DON83O2Hx31ZimQsymq8m36q1udFuV9vVmXp+fxjUfp6dcf7/rQT1l/uLF4Nm9fjrLV2HtV2bbSGnmZrjfeHJfT8x2N+8rvDnZ2Hu+aXw3NlQ1T2hErpOkamMDKVkWmMTGdkBiMzGZkIA02XGJkMBQlDQcJQkDAUJAwFiTMyGQoShoKEoSBhKEgYClKGgpShIGUoSBkKUmdkMhSkDAUpQ0HKUJAyFGQMBRlDQcZQkDEUZM7IZCjIGAoyhoKMoSBjKMgZCnKGgpyhIGcoyJ2RyVCQMxTkDAU5Q0HOUFAwFBQMBQVDQcFQUDgjk6GgYCgoGAoKhoKCoaBkKCgZCkqGgpKhoHRGJkNByVBQMhSUDAUlQ0GVoaDKUFBlKKgyFFSdkclQUGUoqDIUVBkKql+qIJ+ed5x16T/I1OZ2HNaW/qnM1jEyhZF5XUERds7Mdpk5LfX57Y3XW6PmcS1NXmxNh9/D43q42azmj6vN957G29O31qbj/s/D/zvT7F8=",
+  "file_map": {
+    "28": {
+      "source": "use crate::hash::Hasher;\nuse crate::default::Default;\n\nglobal RATE: u32 = 3;\n\nstruct Poseidon2 {\n    cache: [Field;3],\n    state: [Field;4],\n    cache_size: u32,\n    squeeze_mode: bool, // 0 => absorb, 1 => squeeze\n}\n\nimpl Poseidon2 {\n\n    pub fn hash<N>(input: [Field; N], message_size: u64) -> Field {\n        if message_size == N {\n            Poseidon2::hash_internal(input, N, false)\n        } else {\n            Poseidon2::hash_internal(input, message_size, true)\n        }\n    }\n\n    fn new(iv: Field) -> Poseidon2 {\n        let mut result = Poseidon2 { cache: [0; 3], state: [0; 4], cache_size: 0, squeeze_mode: false };\n        result.state[RATE] = iv;\n        result\n    }\n\n    fn perform_duplex(&mut self) -> [Field; RATE] {\n        // zero-pad the cache\n        for i in 0..RATE {\n            if i >= self.cache_size {\n                self.cache[i] = 0;\n            }\n        }\n        // add the cache into sponge state\n        for i in 0..RATE {\n            self.state[i] += self.cache[i];\n        }\n        self.state = crate::hash::poseidon2_permutation(self.state, 4);\n        // return `RATE` number of field elements from the sponge state.\n        let mut result = [0; RATE];\n        for i in 0..RATE {\n            result[i] = self.state[i];\n        }\n        result\n    }\n\n    fn absorb(&mut self, input: Field) {\n        if (!self.squeeze_mode) & (self.cache_size == RATE) {\n            // If we're absorbing, and the cache is full, apply the sponge permutation to compress the cache\n            let _ = self.perform_duplex();\n            self.cache[0] = input;\n            self.cache_size = 1;\n        } else if (!self.squeeze_mode) & (self.cache_size != RATE) {\n            // If we're absorbing, and the cache is not full, add the input into the cache\n            self.cache[self.cache_size] = input;\n            self.cache_size += 1;\n        } else if self.squeeze_mode {\n            // If we're in squeeze mode, switch to absorb mode and add the input into the cache.\n            // N.B. I don't think this code path can be reached?!\n            self.cache[0] = input;\n            self.cache_size = 1;\n            self.squeeze_mode = false;\n        }\n    }\n\n    fn squeeze(&mut self) -> Field {\n        if self.squeeze_mode & (self.cache_size == 0) {\n            // If we're in squeze mode and the cache is empty, there is nothing left to squeeze out of the sponge!\n            // Switch to absorb mode.\n            self.squeeze_mode = false;\n            self.cache_size = 0;\n        }\n        if !self.squeeze_mode {\n            // If we're in absorb mode, apply sponge permutation to compress the cache, populate cache with compressed\n            // state and switch to squeeze mode. Note: this code block will execute if the previous `if` condition was\n            // matched\n            let new_output_elements = self.perform_duplex();\n            self.squeeze_mode = true;\n            for i in 0..RATE {\n                self.cache[i] = new_output_elements[i];\n            }\n            self.cache_size = RATE;\n        }\n        // By this point, we should have a non-empty cache. Pop one item off the top of the cache and return it.\n        let result = self.cache[0];\n        for i in 1..RATE {\n            if i < self.cache_size {\n                self.cache[i - 1] = self.cache[i];\n            }\n        }\n        self.cache_size -= 1;\n        self.cache[self.cache_size] = 0;\n        result\n    }\n\n    fn hash_internal<N>(input: [Field; N], in_len: u64, is_variable_length: bool) -> Field {\n        let two_pow_64 = 18446744073709551616;\n        let iv : Field = (in_len as Field) * two_pow_64;\n        let mut sponge = Poseidon2::new(iv);\n        for i in 0..input.len() {\n            if i < in_len {\n                sponge.absorb(input[i]);\n            }\n        }\n\n        // In the case where the hash preimage is variable-length, we append `1` to the end of the input, to distinguish\n        // from fixed-length hashes. (the combination of this additional field element + the hash IV ensures\n        // fixed-length and variable-length hashes do not collide)\n        if is_variable_length {\n            sponge.absorb(1);\n        }\n        sponge.squeeze()\n    }\n}\n\nstruct Poseidon2Hasher{\n    _state: [Field],\n}\n\nimpl Hasher for Poseidon2Hasher {\n    fn finish(self) -> Field {\n        let iv : Field = (self._state.len() as Field)*18446744073709551616;    // iv = (self._state.len() << 64)\n        let mut sponge = Poseidon2::new(iv);\n        for i in 0..self._state.len() {\n            sponge.absorb(self._state[i]);\n        }\n        sponge.squeeze()\n    }\n\n    fn write(&mut self, input: Field){\n        self._state = self._state.push_back(input);\n    }\n}\n\nimpl Default for Poseidon2Hasher {\n    fn default() -> Self {\n        Poseidon2Hasher {\n            _state: &[],\n        }\n    }\n}\n",
+      "path": "std/hash/poseidon2.nr"
+    },
+    "46": {
+      "source": "use dep::std::hash::poseidon2;\n\n/**\n* @notice verify the Signature through the Oracle\n* @dev returns A secret hash based on the public key  if the signature is valid\n*/\n#[oracle(serverVerify)]\nunconstrained fn verify(\n    pub_key_x: [Field; 32],\n    pub_key_y: [Field; 32],\n    signature: [u8; 64],\n    hashed_message: [u8; 32]\n) -> Field {}\n\n/**\n* @notice unconstrained function that encloses the oracle function\n*/\nunconstrained fn server_verify(\n    pub_key_x: [Field; 32],\n    pub_key_y: [Field; 32],\n    signature: [u8; 64],\n    hashed_message: [u8; 32]\n) -> Field {\n    verify(pub_key_x, pub_key_y, signature, hashed_message)\n}\n\n/**\n* @notice main function that verifies the signature and hashes the public key and the result\n* @dev check if the provided tx_hash is equal to the hash of the public key and the result\n*/\nfn main(\n    pub_key_x: [Field; 32],\n    pub_key_y: [Field; 32],\n    signature: [u8; 64],\n    hashed_message: pub [u8; 32],\n    tx_hash: pub Field,\n    verifying_address: pub Field, // The address that is being verified, used as flag\n    signing_address: pub Field // The address that signed the message, used as flag\n) {\n    let result = server_verify(pub_key_x, pub_key_y, signature, hashed_message);\n\n    let mut combined = [0; 65];\n\n    for i in 0..65 {\n        if i < 32 {\n            combined[i] = pub_key_x[i];\n        } else if i < 64 {\n            combined[i] = pub_key_y[i - 32];\n        } else {\n            combined[i] = result;\n        }\n    }\n\n    let hash = poseidon2::Poseidon2::hash(combined, 65);\n\n    assert(hash == tx_hash);\n}\n",
+      "path": "/Users/anoy/Documents/Hackathon Projects/fusion-circuits/oracle_prove/src/main.nr"
+    }
+  },
+  "names": ["main"]
+}

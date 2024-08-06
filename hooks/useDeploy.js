@@ -1,126 +1,60 @@
 "use client";
 import { Noir } from "@noir-lang/noir_js";
 import { BarretenbergBackend } from "@noir-lang/backend_barretenberg";
-import passwordHash from "@/lib/circuits/password_hash.json";
+
 import { ethers } from "ethers";
-import {
-  FactoryForwarder,
-  PasswordVerifier,
-  ValeriumForwarder,
-  ValeriumMasterCopy,
-  ValeriumProxyFactory,
-} from "@/lib/contracts/AddressManager";
-import ValeriumABI from "@/lib/contracts/ValeriumABI.json";
-import FactoryForwarderABI from "@/lib/contracts/FactoryForwarderABI.json";
+
 import axios from "axios";
+import { TOTP } from "totp-generator";
+import config from "@/lib/config";
 
 export default function useDeploy() {
-  const deploy = async (domain, password, setLoading) => {
+  const deploy = async (domain, setLoading) => {
     setLoading(true);
     try {
-      // Generate Password Hash
-      const backend = new BarretenbergBackend(passwordHash);
-      const noir = new Noir(passwordHash, backend);
+      const wallet = new ethers.Wallet(process.env.NEXT_PUBLIC_PRIVATE_KEY);
 
-      const inputs = {
-        password: ethers.utils.hexlify(ethers.utils.toUtf8Bytes(password)),
-      };
+      const signature = await wallet.signMessage("demo");
 
-      const hash = (await noir.execute(inputs)).returnValue;
-      console.log(hash);
-
-      // Build the initializer
-      const provider = new ethers.providers.JsonRpcProvider(
-        "https://replicator.pegasus.lightlink.io/rpc/v1"
-      );
-      const masterCopy = new ethers.Contract(
-        ValeriumMasterCopy,
-        ValeriumABI,
-        provider
-      );
-      const initializer = masterCopy.interface.encodeFunctionData(
-        "setupValerium",
-        [
-          ethers.utils.keccak256(ethers.utils.toUtf8Bytes(domain)),
-          PasswordVerifier,
-          PasswordVerifier,
-          ValeriumForwarder,
-          "0x51781cc1439BD05a85185C8c8CEc979b263236e3",
-          hash,
-          hash,
-          "0x",
-        ]
-      );
-      console.log(initializer);
-
-      // Prepare the forwarder payload
-      const keypair = ethers.Wallet.createRandom();
-
-      const forwarder = new ethers.Contract(
-        FactoryForwarder,
-        FactoryForwarderABI,
-        provider
+      const pubKey_uncompressed = ethers.utils.recoverPublicKey(
+        ethers.utils.hashMessage("demo"),
+        signature
       );
 
-      const message = {
-        from: keypair.address,
-        recipient: ValeriumProxyFactory,
-        deadline: Number((Date.now() / 1000).toFixed(0)) + 2000,
-        nonce: Number(await forwarder.nonces(keypair.address)),
-        gas: 1000000,
-        domain: domain,
-        initializer: initializer,
-        salt: 1,
-      };
+      let pubKey = pubKey_uncompressed.slice(4);
+      let pub_key_x = pubKey.substring(0, 64);
+      let pub_key_y = pubKey.substring(64);
 
-      const data712 = {
-        types: {
-          ForwardDeploy: [
-            { name: "from", type: "address" },
-            { name: "recipient", type: "address" },
-            { name: "deadline", type: "uint48" },
-            { name: "nonce", type: "uint256" },
-            { name: "gas", type: "uint256" },
-            { name: "domain", type: "string" },
-            { name: "initializer", type: "bytes" },
-            { name: "salt", type: "uint256" },
-          ],
-        },
-        domain: {
-          name: "Valerium Forwarder",
-          version: "1",
-          chainId: 1891,
-          verifyingContract: FactoryForwarder,
-        },
-        message: message,
-      };
-
-      const signature = await keypair._signTypedData(
-        data712.domain,
-        data712.types,
-        data712.message
+      const hashresponse = await axios.post(
+        "http://localhost:8080/api/v1/misc/getPubkeyHash",
+        {
+          pub_key_x: Array.from(ethers.utils.arrayify("0x" + pub_key_x)),
+          pub_key_y: Array.from(ethers.utils.arrayify("0x" + pub_key_y)),
+        }
       );
 
-      console.log(signature);
+      console.log(hashresponse.data.pubkeyHash);
 
-      // Forward the payload using Forwarder
-      const forwardRequest = {
-        from: message.from,
-        recipient: message.recipient,
-        deadline: message.deadline,
-        gas: message.gas,
-        domain: message.domain,
-        initializer: message.initializer,
-        salt: message.salt,
-        signature: signature,
-      };
+      const txVerifier = config.chains[0].deployments.UltraVerifier.address;
 
-      console.log(forwardRequest);
+      // Keys provided must be base32 strings, ie. only containing characters matching (A-Z, 2-7, =).
+      const { otp, expires } = TOTP.generate(
+        process.env.NEXT_PUBLIC_AUTH_SECRET
+      );
+
+      console.log(otp, expires); // prints a 6-digit time-based token based on provided key and current time
 
       const response = await axios.post(
-        "http://localhost:8080/api/deploy/1891",
+        "http://localhost:8080/api/v1/deploy/base",
         {
-          forwardRequest,
+          domain,
+          txHash: hashresponse.data.pubkeyHash,
+          txVerifier,
+        },
+        {
+          headers: {
+            "x-auth": otp,
+          },
         }
       );
 

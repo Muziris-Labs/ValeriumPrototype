@@ -5,6 +5,21 @@
         "internalType": "address",
         "name": "CurrentSingleton_",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_baseProxyFactory",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseChainId_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "wormholeRelayer",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -15,26 +30,7 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "bytes32",
-        "name": "domain",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "valeriumProxy",
-        "type": "address"
-      }
-    ],
-    "name": "AddedDomain",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "contract ValeriumProxy",
+        "internalType": "contract FusionProxy",
         "name": "proxy",
         "type": "address"
       },
@@ -62,32 +58,16 @@
     "type": "event"
   },
   {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "domain",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "initializer",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "saltNonce",
-        "type": "uint256"
-      }
-    ],
-    "name": "createChainSpecificProxyWithNonce",
+    "inputs": [],
+    "name": "IsBaseChain",
     "outputs": [
       {
-        "internalType": "contract ValeriumProxy",
-        "name": "proxy",
-        "type": "address"
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -101,11 +81,6 @@
         "internalType": "bytes",
         "name": "initializer",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "saltNonce",
-        "type": "uint256"
       },
       {
         "internalType": "contract IProxyCreationCallback",
@@ -116,7 +91,7 @@
     "name": "createProxyWithCallback",
     "outputs": [
       {
-        "internalType": "contract ValeriumProxy",
+        "internalType": "contract FusionProxy",
         "name": "proxy",
         "type": "address"
       }
@@ -135,22 +110,55 @@
         "internalType": "bytes",
         "name": "initializer",
         "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "saltNonce",
-        "type": "uint256"
       }
     ],
-    "name": "createProxyWithNonce",
+    "name": "createProxyWithDomain",
     "outputs": [
       {
-        "internalType": "contract ValeriumProxy",
+        "internalType": "contract FusionProxy",
         "name": "proxy",
         "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "proof",
+        "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "domain",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "initializer",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint16",
+        "name": "targetChain",
+        "type": "uint16"
+      },
+      {
+        "internalType": "address",
+        "name": "targetAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasLimit",
+        "type": "uint256"
+      }
+    ],
+    "name": "createProxyWithWormhole",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -193,11 +201,11 @@
         "type": "string"
       }
     ],
-    "name": "getValeriumProxy",
+    "name": "getFusionProxy",
     "outputs": [
       {
         "internalType": "address",
-        "name": "valeriumProxy",
+        "name": "fusionProxy",
         "type": "address"
       }
     ],
@@ -239,12 +247,82 @@
   {
     "inputs": [
       {
+        "internalType": "uint16",
+        "name": "targetChain",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gas_limit",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteCrossChainDeployment",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "cost",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "payload",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "sourceAddress",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint16",
+        "name": "sourceChain",
+        "type": "uint16"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "receiveWormholeMessages",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "forwarder",
         "type": "address"
       }
     ],
     "name": "setupForwarder",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newGenesis",
+        "type": "address"
+      }
+    ],
+    "name": "transferGenesis",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -273,6 +351,19 @@
     "name": "updateSingleton",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "wormholeRelayer",
+    "outputs": [
+      {
+        "internalType": "contract IWormholeRelayer",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

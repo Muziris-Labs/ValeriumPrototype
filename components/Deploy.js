@@ -6,7 +6,6 @@ import useDeploy from "../hooks/useDeploy";
 
 export default function Deploy() {
   const [domain, setDomain] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { deploy } = useDeploy();
 
@@ -19,15 +18,9 @@ export default function Deploy() {
         value={domain}
         onChange={(e) => setDomain(e.target.value)}
       />
-      <Input
-        label="Enter Password"
-        size="lg"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
       <Button
-        disabled={domain === "" || password === "" || loading}
-        onClick={() => deploy(domain, password, setLoading)}
+        disabled={domain === "" || loading}
+        onClick={() => deploy(domain, setLoading)}
       >
         {" "}
         Deploy{" "}

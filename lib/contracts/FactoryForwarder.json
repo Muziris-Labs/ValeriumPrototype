@@ -10,69 +10,15 @@
         "internalType": "string",
         "name": "version",
         "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "_isBase",
+        "type": "bool"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint48",
-        "name": "deadline",
-        "type": "uint48"
-      }
-    ],
-    "name": "ERC2771ForwarderExpiredRequest",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "signer",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      }
-    ],
-    "name": "ERC2771ForwarderInvalidSigner",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "requestedValue",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "msgValue",
-        "type": "uint256"
-      }
-    ],
-    "name": "ERC2771ForwarderMismatchedValue",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "target",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "forwarder",
-        "type": "address"
-      }
-    ],
-    "name": "ERC2771UntrustfulTarget",
-    "type": "error"
   },
   {
     "inputs": [
@@ -158,6 +104,11 @@
   {
     "inputs": [
       {
+        "internalType": "bytes",
+        "name": "serverProof",
+        "type": "bytes"
+      },
+      {
         "components": [
           {
             "internalType": "address",
@@ -190,17 +141,12 @@
             "type": "bytes"
           },
           {
-            "internalType": "uint256",
-            "name": "salt",
-            "type": "uint256"
-          },
-          {
             "internalType": "bytes",
             "name": "signature",
             "type": "bytes"
           }
         ],
-        "internalType": "struct FactoryForwarder.ForwardDeployData",
+        "internalType": "struct Forwarder.ForwardDeployData",
         "name": "request",
         "type": "tuple"
       }
@@ -208,6 +154,19 @@
     "name": "execute",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getChainId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -227,6 +186,37 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_serverVerifier",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_serverHash",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setupServer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newGenesis",
+        "type": "address"
+      }
+    ],
+    "name": "transferGenesis",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

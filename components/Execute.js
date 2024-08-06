@@ -6,7 +6,6 @@ import { useState } from "react";
 
 export default function Execute() {
   const [domain, setDomain] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { execute } = useExecute();
@@ -19,16 +18,10 @@ export default function Execute() {
         value={domain}
         onChange={(e) => setDomain(e.target.value)}
       />
-      <Input
-        label="Enter Password"
-        size="lg"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
       <Button
-        disabled={domain === "" || password === "" || loading}
+        disabled={domain === "" || loading}
         onClick={() => {
-          execute(domain, password, setLoading);
+          execute(domain, setLoading);
         }}
       >
         {" "}

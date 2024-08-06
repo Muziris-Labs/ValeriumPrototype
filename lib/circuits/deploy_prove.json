@@ -1,0 +1,64 @@
+{
+  "noir_version": "0.30.0+af57471035e4fa7eaffa71693219df6d029dbcde",
+  "hash": 1321611509531399935,
+  "abi": {
+    "parameters": [
+      {
+        "name": "reqDomain",
+        "type": { "kind": "field" },
+        "visibility": "private"
+      },
+      {
+        "name": "passcode",
+        "type": { "kind": "field" },
+        "visibility": "private"
+      },
+      {
+        "name": "serverHash",
+        "type": { "kind": "field" },
+        "visibility": "public"
+      },
+      { "name": "domain", "type": { "kind": "field" }, "visibility": "public" },
+      {
+        "name": "chainId",
+        "type": { "kind": "field" },
+        "visibility": "public"
+      },
+      {
+        "name": "signing_address",
+        "type": { "kind": "field" },
+        "visibility": "private"
+      },
+      {
+        "name": "proving_address",
+        "type": { "kind": "field" },
+        "visibility": "public"
+      }
+    ],
+    "param_witnesses": {
+      "chainId": [{ "start": 4, "end": 5 }],
+      "domain": [{ "start": 3, "end": 4 }],
+      "passcode": [{ "start": 1, "end": 2 }],
+      "proving_address": [{ "start": 6, "end": 7 }],
+      "reqDomain": [{ "start": 0, "end": 1 }],
+      "serverHash": [{ "start": 2, "end": 3 }],
+      "signing_address": [{ "start": 5, "end": 6 }]
+    },
+    "return_type": null,
+    "return_witnesses": [],
+    "error_types": {}
+  },
+  "bytecode": "H4sIAAAAAAAA/71UWw4CIQwE9q3+e42Wx1L+vIpE9v4nMEKWGHx8uayTTCZtEzJDCZytOEX27BM86yWrglnrYGVAhVeQzpMBbfxMSGjI3CQpFUiTdd5ZcKhVwMU4tcCKoTgLNmJPn+PvPuV7I3k7R7aF13uukw5Zx6KfMEUeIo95Py17haicWdTbDU477bl2ZlYxc/OnzLAN2FW8v75iZl688abIn/pdMRN5nupvf9YTD6N0WpXdBAAA",
+  "debug_symbols": "3ZPRCoMgFIbf5Vx3kXoq7VXGGFY2hLAoG4zo3WdbbmuTHqA7f8/3gb9wJqhUMV4v2tTtAPlpgqYtpdWtcWmC+Hk1dNIsabCyt5AzyiNQpnKnjM8R1LpRkGM6R/8oZh7lH5TyAIokEyuLRCT7MOXIVpjyFPdhErNkhUnMN/A5AnL8ivT4FVmwoqDvt8TfFZ2AIQEpegHZj5AEhcT/DAqyEVy4yV7LolHLJi2z0ZR+sVy09+41cewD",
+  "file_map": {
+    "28": {
+      "source": "use crate::hash::Hasher;\nuse crate::default::Default;\n\nglobal RATE: u32 = 3;\n\nstruct Poseidon2 {\n    cache: [Field;3],\n    state: [Field;4],\n    cache_size: u32,\n    squeeze_mode: bool, // 0 => absorb, 1 => squeeze\n}\n\nimpl Poseidon2 {\n\n    pub fn hash<N>(input: [Field; N], message_size: u64) -> Field {\n        if message_size == N {\n            Poseidon2::hash_internal(input, N, false)\n        } else {\n            Poseidon2::hash_internal(input, message_size, true)\n        }\n    }\n\n    fn new(iv: Field) -> Poseidon2 {\n        let mut result = Poseidon2 { cache: [0; 3], state: [0; 4], cache_size: 0, squeeze_mode: false };\n        result.state[RATE] = iv;\n        result\n    }\n\n    fn perform_duplex(&mut self) -> [Field; RATE] {\n        // zero-pad the cache\n        for i in 0..RATE {\n            if i >= self.cache_size {\n                self.cache[i] = 0;\n            }\n        }\n        // add the cache into sponge state\n        for i in 0..RATE {\n            self.state[i] += self.cache[i];\n        }\n        self.state = crate::hash::poseidon2_permutation(self.state, 4);\n        // return `RATE` number of field elements from the sponge state.\n        let mut result = [0; RATE];\n        for i in 0..RATE {\n            result[i] = self.state[i];\n        }\n        result\n    }\n\n    fn absorb(&mut self, input: Field) {\n        if (!self.squeeze_mode) & (self.cache_size == RATE) {\n            // If we're absorbing, and the cache is full, apply the sponge permutation to compress the cache\n            let _ = self.perform_duplex();\n            self.cache[0] = input;\n            self.cache_size = 1;\n        } else if (!self.squeeze_mode) & (self.cache_size != RATE) {\n            // If we're absorbing, and the cache is not full, add the input into the cache\n            self.cache[self.cache_size] = input;\n            self.cache_size += 1;\n        } else if self.squeeze_mode {\n            // If we're in squeeze mode, switch to absorb mode and add the input into the cache.\n            // N.B. I don't think this code path can be reached?!\n            self.cache[0] = input;\n            self.cache_size = 1;\n            self.squeeze_mode = false;\n        }\n    }\n\n    fn squeeze(&mut self) -> Field {\n        if self.squeeze_mode & (self.cache_size == 0) {\n            // If we're in squeze mode and the cache is empty, there is nothing left to squeeze out of the sponge!\n            // Switch to absorb mode.\n            self.squeeze_mode = false;\n            self.cache_size = 0;\n        }\n        if !self.squeeze_mode {\n            // If we're in absorb mode, apply sponge permutation to compress the cache, populate cache with compressed\n            // state and switch to squeeze mode. Note: this code block will execute if the previous `if` condition was\n            // matched\n            let new_output_elements = self.perform_duplex();\n            self.squeeze_mode = true;\n            for i in 0..RATE {\n                self.cache[i] = new_output_elements[i];\n            }\n            self.cache_size = RATE;\n        }\n        // By this point, we should have a non-empty cache. Pop one item off the top of the cache and return it.\n        let result = self.cache[0];\n        for i in 1..RATE {\n            if i < self.cache_size {\n                self.cache[i - 1] = self.cache[i];\n            }\n        }\n        self.cache_size -= 1;\n        self.cache[self.cache_size] = 0;\n        result\n    }\n\n    fn hash_internal<N>(input: [Field; N], in_len: u64, is_variable_length: bool) -> Field {\n        let two_pow_64 = 18446744073709551616;\n        let iv : Field = (in_len as Field) * two_pow_64;\n        let mut sponge = Poseidon2::new(iv);\n        for i in 0..input.len() {\n            if i < in_len {\n                sponge.absorb(input[i]);\n            }\n        }\n\n        // In the case where the hash preimage is variable-length, we append `1` to the end of the input, to distinguish\n        // from fixed-length hashes. (the combination of this additional field element + the hash IV ensures\n        // fixed-length and variable-length hashes do not collide)\n        if is_variable_length {\n            sponge.absorb(1);\n        }\n        sponge.squeeze()\n    }\n}\n\nstruct Poseidon2Hasher{\n    _state: [Field],\n}\n\nimpl Hasher for Poseidon2Hasher {\n    fn finish(self) -> Field {\n        let iv : Field = (self._state.len() as Field)*18446744073709551616;    // iv = (self._state.len() << 64)\n        let mut sponge = Poseidon2::new(iv);\n        for i in 0..self._state.len() {\n            sponge.absorb(self._state[i]);\n        }\n        sponge.squeeze()\n    }\n\n    fn write(&mut self, input: Field){\n        self._state = self._state.push_back(input);\n    }\n}\n\nimpl Default for Poseidon2Hasher {\n    fn default() -> Self {\n        Poseidon2Hasher {\n            _state: &[],\n        }\n    }\n}\n",
+      "path": "std/hash/poseidon2.nr"
+    },
+    "46": {
+      "source": "use dep::std::hash::poseidon2;\n\n/**\n* @notice Hashing the passcode and chainId and checking if it matches the serverHash\n*/\nfn main(\n    reqDomain: Field,\n    passcode: Field,\n    serverHash: pub Field,\n    domain: pub Field,\n    chainId: pub Field,\n    signing_address: Field,\n    proving_address: pub Field\n) {\n    let hash = poseidon2::Poseidon2::hash([passcode, chainId], 2);\n\n    assert(hash == serverHash);\n    assert(domain == reqDomain);\n    assert(signing_address == proving_address);\n}\n",
+      "path": "/Users/anoy/Documents/Hackathon Projects/fusion-circuits/deploy_prove/src/main.nr"
+    }
+  },
+  "names": ["main"]
+}
